@@ -5,7 +5,7 @@ import requests
 url = 'https://dev69736.service-now.com//api/now/table/incident?sysparm_limit=10'
 url1='https://dev69736.service-now.com//api/now/attachment/file?table_name=incident&table_sys_id=d71f7935c0a8016700802b64c67c11c6&file_name=test.txt'
 user = 'admin'
-pwd = 'xxxx'
+pwd = '@Am30265177'
 
 # Set proper headers
 headers = {"Accept": "application/json"}

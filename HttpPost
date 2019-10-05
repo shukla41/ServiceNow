@@ -1,0 +1,76 @@
+package logfilecreate
+
+import java.io.IOException
+
+import org.apache.http.HttpEntity
+
+import org.apache.http.HttpException
+
+import org.apache.http.HttpHost
+
+import org.apache.http.auth.AuthScope
+
+import org.apache.http.auth.UsernamePasswordCredentials
+
+import org.apache.http.client.CredentialsProvider
+
+import org.apache.http.client.methods.CloseableHttpResponse
+
+import org.apache.http.client.methods.HttpPost
+
+import org.apache.http.entity.ByteArrayEntity
+
+import org.apache.http.impl.client.BasicCredentialsProvider
+
+import org.apache.http.impl.client.CloseableHttpClient
+
+import org.apache.http.impl.client.HttpClients
+
+import org.apache.http.util.EntityUtils
+
+import PostAction._
+
+//remove if not needed
+import scala.collection.JavaConversions._
+
+object PostAction {
+
+  def main(args: Array[String]): Unit = {
+    val restAction: PostAction = new PostAction()
+    restAction.postRequest()
+  }
+
+}
+
+class PostAction {
+
+  def postRequest(): Unit = {
+    // This must be valid json string with valid fields and values from table
+    val postData: String = "{\"short_description\":\"Test with java post\"}"
+    val credsProvider: CredentialsProvider = new BasicCredentialsProvider()
+    credsProvider.setCredentials(
+      new AuthScope(new HttpHost("dev69736.service-now.com")),
+      new UsernamePasswordCredentials("admin",
+        "****"))
+
+    val httpclient: CloseableHttpClient =
+      HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build()
+    try {
+      val httpPost: HttpPost = new HttpPost(
+        "https://dev69736.service-now.com//api/now/table/incident?sysparm_limit=10")
+      httpPost.setHeader("Accept", "application/json")
+      httpPost.setHeader("Content-Type", "application/json")
+      val entity: HttpEntity = new ByteArrayEntity(postData.getBytes("utf-8"))
+      httpPost.setEntity(entity)
+      println("Executing request " + httpPost.getRequestLine)
+      val response: CloseableHttpResponse = httpclient.execute(httpPost)
+      try {
+        println("----------------------------------------")
+        println(response.getStatusLine)
+        val responseBody: String = EntityUtils.toString(response.getEntity)
+        println(responseBody)
+      } finally response.close()
+    } finally httpclient.close()
+  }
+
+}
